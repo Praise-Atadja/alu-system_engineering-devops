@@ -1,11 +1,4 @@
-What is a server
-
-Where servers usually live
-
-What is SSH
-
-How to create an SSH RSA key pair
-
-How to connect to a remote host using an SSH RSA key pair
-
-The advantage of using #!/usr/bin/env bash instead of /bin/bash
+What is the main role of a web server
+What is a child process
+Why web servers usually have a parent process and child processes
+What are the main HTTP requests
