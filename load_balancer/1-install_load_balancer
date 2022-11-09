@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
 # Install and configure HAproxy
-sudo apt-get -y install --no-install-recommends software-properties-common
-sudo add-apt-repository -y ppa:vbernat/haproxy-2.0
+# Distribute requests using a roundrobin algorithm
 sudo apt-get -y update
-sudo apt-get -y install haproxy=2.0.\*
+sudo apt-get -y upgrade
+sudo apt-get -y install haproxy
 
-cat >> /etc/haproxy/haproxy.cfg << EOF
-frontend Local_Server
-        bind *:80
-        mode http
-        default_backend Web_Servers
-backend Web_Servers
-        balance roundrobin
-        mode http
-        server web-01 54.221.120.174:80 check
-        server web-02 34.229.220.224:80 check
-EOF
+file=/etc/haproxy/haproxy.cfg
+sudo echo -e "
+frontend nodes
+	bind *:80
+	mode http
+	default_backend backendnodes" | sudo tee -a $file
 
+sudo echo -e "
+backend backendnodes
+	mode http
+	balance roundrobin
+	option forwardfor
+	http-request set-header X-Forwarded-Port %[dst_port]
+	server 4821-web-01 54.221.120.174:80 check
+	server 4821-web-02 34.229.220.224:80 check" | sudo tee -a $file
+	
 sudo service haproxy restart
