@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 # Installing a load balancer
 sudo apt-get -y install --no-install-recommends software-properties-common
 sudo add-apt-repository -y ppa:vbernat/haproxy-2.0
@@ -17,4 +18,28 @@ backend Web_Servers
 	server 4821-web-02 34.229.220.224:80 check
 EOF
 
+=======
+# Install and configure HAproxy
+# Distribute requests using a roundrobin algorithm
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install haproxy
+
+file=/etc/haproxy/haproxy.cfg
+sudo echo -e "
+frontend nodes
+	bind *:80
+	mode http
+	default_backend backendnodes" | sudo tee -a $file
+
+sudo echo -e "
+backend backendnodes
+	mode http
+	balance roundrobin
+	option forwardfor
+	http-request set-header X-Forwarded-Port %[dst_port]
+	server 4821-web-01 54.221.120.174:80 check
+	server 4821-web-02 34.229.220.224:80 check" | sudo tee -a $file
+	
+>>>>>>> b8c375788afaa0ba68626ac4b3e8b351d726d509
 sudo service haproxy restart
